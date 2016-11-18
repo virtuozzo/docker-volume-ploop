@@ -18,7 +18,7 @@ This guide assumes you are using a recent version of Virtuozzo or OpenVZ, and ha
 
 ```
 cd /etc/yum.repos.d/
-wget https://goo.gl/9N6lfJ
+wget https://goo.gl/9N6lfJ -O kir-docker-volume-ploop-epel-7.repo
 yum install docker-volume-ploop
 ```
 
@@ -57,7 +57,7 @@ its volumes. For example:
 
 Next, you need to create a new volume. Example:
 
-```docker volume create -d ploop -o size=512G -name MyFirstVolume```
+```docker volume create -d ploop -o size=512G --name MyFirstVolume```
 
 Finally, run a container with the volume:
 
