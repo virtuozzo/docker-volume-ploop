@@ -43,6 +43,7 @@ type mount struct {
 
 type ploopDriver struct {
 	home    string
+	work    string
 	opts    volumeOptions
 	mountsM sync.RWMutex
 	mounts  map[string]*mount
@@ -94,7 +95,7 @@ func (o *volumeOptions) setScope(str string) error {
 	return nil
 }
 
-func newPloopDriver(home string, opts *volumeOptions) *ploopDriver {
+func newPloopDriver(home, work string, opts *volumeOptions) *ploopDriver {
 	// home must exist
 	_, err := os.Stat(home)
 	if err != nil {
@@ -117,12 +118,13 @@ func newPloopDriver(home string, opts *volumeOptions) *ploopDriver {
 
 	d := ploopDriver{
 		home:   home,
+		work:   work,
 		opts:   *opts,
 		mounts: make(map[string]*mount),
 	}
 
 	// Make sure to create base paths we'll use
-	err = os.MkdirAll(d.img(""), 0700)
+	err = os.MkdirAll(d.dir(""), 0700)
 	if err != nil {
 		logrus.Fatalf("Error %s", err)
 	}

@@ -1,32 +1,42 @@
-SOURCES = driver.go main.go paths.go vstorage.go fstype.go
+PLUGIN_NAME=virtuozzo/ploop
+PLUGIN_TAG=next
 
-BIN = docker-volume-ploop
-BINDIR = /usr/bin
-
-SYSTEMD_FILES = etc/systemd/docker-volume-ploop.service \
-		etc/systemd/docker-volume-ploop.socket
-SYSTEMD_DIR = /usr/lib/systemd/system
-
-CONFIG = etc/sysconfig/docker-volume-ploop
-CONFIG_DIR = /etc/sysconfig
-
-all: $(BIN)
-
-$(BIN): $(SOURCES)
-	go build -o $(BIN) $(SOURCES)
-
-test:
-	go test -v .
+all: clean docker rootfs create
 
 clean:
-	rm -f $(BIN)
+	@echo "### rm ./plugin"
+	@rm -rf ./plugin
 
-install: $(BIN) $(SYSTEMD_SERVICE) $(CONFIG)
-	install -d $(DESTDIR)$(BINDIR)
-	install -m 755 $(BIN) $(DESTDIR)$(BINDIR)
-	install -d $(DESTDIR)$(SYSTEMD_DIR)
-	install -m 644 $(SYSTEMD_FILES) $(DESTDIR)$(SYSTEMD_DIR)
-	install -d $(DESTDIR)$(CONFIG_DIR)
-	install -m 644 $(CONFIG) $(DESTDIR)$(CONFIG_DIR)
+docker:
+	@echo "### docker build: builder image"
+	@docker build -q -t builder -f Dockerfile.dev .
+	@echo "### extract docker-volume-ploop"
+	@docker create --name tmp builder
+	@docker cp tmp:/go/bin/docker-volume-ploop .
+	@docker rm -vf tmp
+	@docker rmi builder
+	@echo "### docker build: rootfs image with docker-volume-ploop"
+	@docker build -q -t ${PLUGIN_NAME}:rootfs .
 
-.PHONY: all test clean install
+rootfs:
+	@echo "### create rootfs directory in ./plugin/rootfs"
+	@mkdir -p ./plugin/rootfs
+	@docker create --name tmp ${PLUGIN_NAME}:rootfs
+	@docker export tmp | tar -x -C ./plugin/rootfs
+	@echo "### copy config.json to ./plugin/"
+	@cp config.json ./plugin/
+	@docker rm -vf tmp
+
+create:
+	@echo "### remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG} if exists"
+	@docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG} || true
+	@echo "### create new plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
+	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
+
+enable:
+	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
+	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
+
+push:  clean docker rootfs create enable
+	@echo "### push plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
+	@docker plugin push ${PLUGIN_NAME}:${PLUGIN_TAG}
