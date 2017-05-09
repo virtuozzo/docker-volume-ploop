@@ -1,0 +1,44 @@
+{
+    "description": "Ploop plugin for Docker",
+    "documentation": "https://virtuozzo.com/docker-storage/",
+    "Args":
+        {
+		"description": "Arguments for the plugin process (-debug, -size, etc)",
+		"name": "args",
+		"settable": ["value"],
+		"value": ["-size", "16Gb"]
+	},
+    "entrypoint": [
+        "/docker-volume-ploop"
+    ],
+    "interface": {
+        "socket": "ploop.sock",
+        "types": [
+            "docker.volumedriver/1.0"
+        ]
+    },
+    "linux": {
+        "capabilities": [
+            "CAP_SYS_ADMIN"
+        ],
+	"AllowAllDevices": true
+    },
+    "mounts": [
+        {
+            "name": "vstorage",
+            "destination": "/mnt/vstorage/",
+            "options": [
+		"rbind"
+            ],
+            "source": "/mnt/vstorage/docker",
+            "type": "bind",
+            "settable" : [
+		"source"
+            ]
+        }
+    ],
+    "network": {
+        "type": "host"
+    },
+    "propagatedmount": "/mnt/docker"
+}

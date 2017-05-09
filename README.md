@@ -17,29 +17,33 @@ This guide assumes you are using a recent version of Virtuozzo, Virtuozzo Storag
 The recommended way of installation is from the repository. This is as easy as:
 
 ```
-wget https://goo.gl/9N6lfJ -O /etc/yum.repos.d/docker-volume-ploop.repo
-yum install docker-volume-ploop
+docker plugin install virtuozzo/ploop
 ```
 Alternatively, you can build the plugin from source, for details, see [INSTALL.md](INSTALL.md).
 
 ## Starting
 
-First, you need to set home path for the plugin. To do so, edit the ```/etc/sysconfig/docker-volume-plugin``` file, uncommenting the ```DKV_PLOOP_HOME=``` line, and modifying the ```-home``` argument, for example:
+First, you need to set home path for the plugin.
 
 ```
 # Set the plugin home directory
-DKV_PLOOP_HOME="-home /mnt/vstorage/docker/"
+docker plugin set virtuozzo/ploop vstorage.source=/mnt/vstorage/docker
 ```
 
-Now you can start a daemon:
+You can set a default size for volumes and other options:
+```
+docker plugin set virtuozzo/ploop:next args="-size 12Gb -debug"
+```
 
-```systemctl start docker-volume-ploop```
+Now you can start the plugin:
+
+```docker plugin enable virtuozzo/ploop```
 
 ## Usage
 
 Once docker and docker-volume-ploop are running, you can create a volume:
 
-```docker volume create -d ploop -o size=512G --name MyFirstVolume```
+```docker volume create -d virtuozzo/ploop -o size=512G --name MyFirstVolume```
 
 To run a container with the volume:
 

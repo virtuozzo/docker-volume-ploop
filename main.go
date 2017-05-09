@@ -11,11 +11,14 @@ import (
 	"github.com/kolyshkin/goploop"
 )
 
+const socketAddress = "/run/docker/plugins/ploop.sock"
+
 // Options and their default values
 var (
-	home  = flag.String("home", "/pcs", "Base directory where volumes are created")
+	home  = flag.String("home", "/mnt/vstorage", "Base directory where volumes are created")
+	work  = flag.String("work", "/mnt/docker", "Base directory where mount points are created")
 	scope = flag.String("scope", "auto", "Volumes scope (local or global)")
-	size  = flag.String("size", "16GB", "Default image size")
+	size  = flag.String("size", "1GB", "Default image size")
 	mode  = flag.String("mode", "expanded", "Default ploop image mode")
 	clog  = flag.String("clog", "0", "Cluster block log size in 512-byte sectors")
 	tier  = flag.String("tier", "-1", "Virtuozzo Storage tier (0 is fastest")
@@ -73,9 +76,9 @@ func main() {
 	}
 
 	// Let's run!
-	d := newPloopDriver(*home, &opts)
+	d := newPloopDriver(*home, *work, &opts)
 	h := volume.NewHandler(d)
-	e := h.ServeUnix("root", "ploop")
+	e := h.ServeUnix(socketAddress, 0)
 	if e != nil {
 		logrus.Fatalf("Failed to initialize: %s", e)
 	}

@@ -1,0 +1,13 @@
+FROM centos:7
+
+ADD virtuozzo.repo /etc/yum.repos.d/
+
+RUN printf "upgrade \n install ploop ploop-devel gdisk golang \n run" | yum shell -y
+
+COPY . /go/src/github.com/virtuozzo/docker-volume-ploop
+WORKDIR /go/src/github.com/virtuozzo/docker-volume-ploop
+ENV GOPATH=/go
+
+RUN go install
+
+CMD ["/go/bin/docker-volume-ploop"]
