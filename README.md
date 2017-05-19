@@ -17,7 +17,7 @@ This guide assumes you are using a recent version of Virtuozzo, Virtuozzo Storag
 The recommended way of installation is from the repository. This is as easy as:
 
 ```
-docker plugin install virtuozzo/ploop
+docker plugin install virtuozzo/ploop vstorage.source=[VSTORAGE MOUNT POINT]
 ```
 Alternatively, you can build the plugin from source, for details, see [INSTALL.md](INSTALL.md).
 
@@ -32,7 +32,7 @@ docker plugin set virtuozzo/ploop vstorage.source=/mnt/vstorage/docker
 
 You can set a default size for volumes and other options:
 ```
-docker plugin set virtuozzo/ploop:next args="-size 12Gb -debug"
+docker plugin set virtuozzo/ploop args="-size 12Gb -debug"
 ```
 
 Now you can start the plugin:
@@ -52,7 +52,7 @@ To run a container with the volume:
 Here ```VOLUME``` is the volume name, and ```MOUNT``` is the path under which
 the volume will be available inside a container. For example:
 
-```docker run -it -v MyFirstVol:/mnt alpine /bin/ash```
+```docker run -it -v MyFirstVolume:/mnt alpine /bin/ash```
 
 See ```man docker volume``` for other volume operations. For example, to list existing volumes:
 
@@ -123,3 +123,6 @@ Don't forget to unmount it:
 This software is licensed under the Apache License, Version 2.0. See
 [LICENSE](https://github.com/kolyshkin/docker-volume-ploop/blob/master/LICENSE)
 for the full license text.
+
+## Demo
+[![asciicast](https://asciinema.org/a/121423.png)](https://asciinema.org/a/121423)
