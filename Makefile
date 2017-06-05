@@ -1,5 +1,5 @@
 PLUGIN_NAME=virtuozzo/ploop
-PLUGIN_TAG=next
+PLUGIN_TAG=1.0
 
 all: clean docker rootfs create
 
