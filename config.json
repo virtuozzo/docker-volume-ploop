@@ -30,7 +30,7 @@
             "options": [
 		"rbind"
             ],
-            "source": "/mnt/vstorage/docker",
+            "source": "/mnt/vstorage/",
             "type": "bind",
             "settable" : [
 		"source"
