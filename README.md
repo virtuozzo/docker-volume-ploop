@@ -8,7 +8,7 @@ To use this plugin with [Virtuozzo Storage](https://virtuozzo.com/products/virtu
 
 Alternatively, to use this plugin with ploop, you need to have [Virtuozzo](virtuozzo.com/products/virtuozzo/) or [OpenVZ](https://openvz.org/) up and running.
 
-Surely, you need [Docker](https://docker.com/) up and running. Docker 1.10+ is required, Docker 1.12+ is recommended.
+Surely, you need [Docker](https://docker.com/) v1.13+ up and running.
 
 ## Installation
 
